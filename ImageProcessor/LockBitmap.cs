@@ -5,11 +5,10 @@ using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
 namespace ImageProcessor
-{
-    public class LockBitmap
+{    public class LockBitmap
     {
         IntPtr pointer = IntPtr.Zero;
-        Bitmap bmp = null;
+        readonly Bitmap bmp = null;
         BitmapData bitmapData = null;
 
         public byte[] Pixels { get; set; }
@@ -30,22 +29,18 @@ namespace ImageProcessor
                 Height = bmp.Height;
 
                 var rect = new Rectangle(0, 0, Width, Height);
-
-                int totalPixels = Width * Height;
                 
-                // get source bitmap pixel format size
+                //get source bitmap pixel format size
                 Depth = Image.GetPixelFormatSize(bmp.PixelFormat);
 
                 //lock bits
                 bitmapData = bmp.LockBits(rect, ImageLockMode.ReadWrite, bmp.PixelFormat);
 
-                var stride = bitmapData.Stride;
-
-                var formatSize = Image.GetPixelFormatSize(bmp.PixelFormat);
 
                 // create byte array to copy pixel values
+                var formatSize = Image.GetPixelFormatSize(bmp.PixelFormat);
                 int step = formatSize / 8;
-                Pixels = new byte[totalPixels * step];
+                Pixels = new byte[Width * Height * step];
 
                 //wait for it...
                 pointer = bitmapData.Scan0;
@@ -77,7 +72,7 @@ namespace ImageProcessor
             {
                 bmp.Dispose();
             }
-        }
+        }        
 
         public bool HasAlpha(int x, int y)
         {

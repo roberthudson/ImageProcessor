@@ -29,12 +29,15 @@ namespace ImageProcessor
             {
                 for (int y = 0; y < lockBitmap.Height; y++)
                 {
-                    //Trace.WriteLine($"X:{x} Y:{y}"); //<< this will slow things down considerably
-                    
+                    //Trace.WriteLine($"X:{x} Y:{y}"); //<< this will slow things down considerably                    
+
+                    //var c = lockBitmap.GetPixel(x, y);
+                    //var c = lockBitmap.GetPixel(x, y);
+                    //if (c.A != 0)
+
                     //don't need to actually get the color components - too time consuming
                     //we only need to test if the Alpha channel in the array is non-zero
-                    //var c = lockBitmap.GetPixel(x, y);
-                    if (lockBitmap.HasAlpha(x, y)) // (c.A != 0)
+                    if (lockBitmap.HasAlpha(x, y))
                     {
                         if (y < top)
                             top = y;
