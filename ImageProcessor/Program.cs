@@ -1,5 +1,7 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Drawing;
+using System.Threading.Tasks;
 
 namespace ImageProcessor
 {
@@ -8,7 +10,7 @@ namespace ImageProcessor
         static void Main(string[] args)
         {
             //TODO - change this path
-            Bitmap bmp = (Bitmap)Image.FromFile(@"c:\users\rob\downloads\Raw Image.png");
+            Bitmap bmp = (Bitmap)Image.FromFile(@"c:\users\rob\downloads\raw image.png");
 
             //benchmark
             Stopwatch sw = Stopwatch.StartNew();
@@ -25,20 +27,17 @@ namespace ImageProcessor
             int bottom = 0;
             int left = lockBitmap.Width;
             int right = 0;
-            for (int x = 0; x < lockBitmap.Width; x++)
+
+            Parallel.For(0, lockBitmap.Width, x =>
             {
-                for (int y = 0; y < lockBitmap.Height; y++)
+                for (int y = 0; y < lockBitmap.Height; y++) //non-parallel inner loop, the overhead isn't worth it
                 {
                     //Trace.WriteLine($"X:{x} Y:{y}"); //<< this will slow things down considerably                    
 
-                    //var c = lockBitmap.GetPixel(x, y);
-                    //var c = lockBitmap.GetPixel(x, y);
-                    //if (c.A != 0)
-
                     //don't need to actually get the color components - too time consuming
-                    //we only need to test if the Alpha channel in the array is non-zero
+                    //we only need to test if the Alpha channel portion of the array is non-zero
                     if (lockBitmap.HasAlpha(x, y))
-                    {
+                    {                       
                         if (y < top)
                             top = y;
                         if (x < left)
@@ -49,7 +48,8 @@ namespace ImageProcessor
                             right = x;
                     }
                 }
-            }
+            });
+
 
             //release lock
             lockBitmap.UnlockBits();
@@ -61,7 +61,11 @@ namespace ImageProcessor
 
             //how did we do?
             var elapsedMilliseconds = sw.ElapsedMilliseconds;
-            Debug.WriteLine(string.Format("Elapsed time: {0}", elapsedMilliseconds));
+            Console.WriteLine(string.Format("Elapsed time: {0} milliseconds", elapsedMilliseconds));
+
+            Console.WriteLine(String.Format("\nOverlay coordinates (top, bottom, left, right): {0}, {1}, {2}, {3}", top, bottom, left, right));
+            Console.WriteLine("\nHit any key to close window");
+            Console.ReadKey();
         }
     }
 }

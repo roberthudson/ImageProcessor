@@ -73,17 +73,16 @@ namespace ImageProcessor
                 bmp.Dispose();
             }
         }        
-
         public bool HasAlpha(int x, int y)
         {
             try
             {
                 //# of color components
-                int count = 4; //assume this is a 32-bit image
+                //int count = 4; //assume this is a 32-bit image
 
                 //start index
-                int i = ((y * Width) + x) * count;
-                return Pixels[i + 3] > 0;                
+                //int i = ((y * Width) + x) * count;
+                return Pixels[((y * Width) + x) * 4 + 3] > 0;                
             }
             catch (Exception ex)
             {
