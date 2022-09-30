@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace ImageProcessor
@@ -22,7 +21,7 @@ namespace ImageProcessor
             bmp = source;
         }
 
-        public unsafe void LockBits()
+        public void LockBits()
         {
             try
             {
@@ -76,30 +75,26 @@ namespace ImageProcessor
             }
             finally
             {
-                    bmp.Dispose();
+                bmp.Dispose();
             }
         }
 
         public bool HasAlpha(int x, int y)
         {
-            Color color = Color.Empty;
-
-            //# of color components
-            int count = 4; //assume this is a 32-bit image
-
-            //start index
-            int i = ((y * Width) + x) * count;
-
-            if (i > Pixels.Length - count)
+            try
             {
-                throw new IndexOutOfRangeException();
-            }
+                //# of color components
+                int count = 4; //assume this is a 32-bit image
 
-            if (Depth == 32) //RGBA
-            {
-                return Pixels[i + 3] > 0;
+                //start index
+                int i = ((y * Width) + x) * count;
+                return Pixels[i + 3] > 0;                
             }
-            return false;
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+                return false;
+            }
         }
    
         public Color GetPixel(int x, int y)

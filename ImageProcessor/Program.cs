@@ -5,7 +5,7 @@ namespace ImageProcessor
 {
     internal class Program
     {
-        static unsafe void Main(string[] args)
+        static void Main(string[] args)
         {
             //TODO - change this path
             Bitmap bmp = (Bitmap)Image.FromFile(@"c:\users\rob\downloads\Raw Image.png");
@@ -19,7 +19,7 @@ namespace ImageProcessor
             //lockdown
             lockBitmap.LockBits();
 
-            //slow code sped up a "wee bit"
+            //original slow code sped up a wee bit
             //initialize 
             int top = lockBitmap.Height;
             int bottom = 0;
@@ -34,8 +34,7 @@ namespace ImageProcessor
                     //don't need to actually get the color components - too time consuming
                     //we only need to test if the Alpha channel in the array is non-zero
                     //var c = lockBitmap.GetPixel(x, y);
-                    bool hasAlpha = lockBitmap.HasAlpha(x, y);
-                    if (hasAlpha) // (c.A != 0)
+                    if (lockBitmap.HasAlpha(x, y)) // (c.A != 0)
                     {
                         if (y < top)
                             top = y;
@@ -49,12 +48,12 @@ namespace ImageProcessor
                 }
             }
 
+            //release lock
+            lockBitmap.UnlockBits();
+
             //the final result
             var activeArea = new OverlayActiveArea(top, bottom, left, right);
 
-            //release lock
-            lockBitmap.UnlockBits();
-          
             sw.Stop();
 
             //how did we do?
